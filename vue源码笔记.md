@@ -54,9 +54,17 @@
     vm.__v_skip = true
     vm._scope = new EffectScope(true /* detached */)
     vm._scope._vm = true
+    // options中_isComponent用于判断当前的options是否是一个组件的
+    // 是的话执行initInternalComponent方法，否则执行mergeOptions方法
     if (options && options._isComponent) {
+      // **initInternalComponent**接收两个参数，第一个是当前的vue实例，第二个是初始化传入的options。
+      // 首先通过 Object.create((vm.constructor as any).options) 创建了一个新对象 opts，并将其赋值给 vm.$options。这样，vm.$options 就继承了组件构造函数的选项，包括组件的生命周期钩子、指令、计算属性等。
+      // 接下来给opts的parent、_parentVnode、propsData、_parentListeners、_renderChildren、_componentTag、render、staticRenderFns赋值
+      // initInternalComponent的作用是初始化组件的内部选项，为组件实例的 $options 属性赋值，并从父虚拟节点的 componentOptions 中提取一些信息，以便后续的组件渲染和交互
       initInternalComponent(vm, options as any)
     } else {
+      // **mergeOptions**要接收三个参数parent，children，vm，在_init调用的时候分别对应resolveConstructorOptions(vm.constructor as any)，options || {}，vm，vm我们前面已经介绍过了，第二个children参数也好理解，所以先看一下第一个参数主要就是resolveConstructorOptions()这个方法
+      // *resolveConstructorOptions*
       vm.$options = mergeOptions(
         resolveConstructorOptions(vm.constructor as any),
         options || {},
